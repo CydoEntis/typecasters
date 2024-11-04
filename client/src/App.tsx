@@ -9,7 +9,7 @@ function App() {
 
 	console.log(user);
 
-	return <p>Are you working you dumb pos..</p>;
+	return <p className="bg-red-500 text-2xl">Are you working you dumb pos..</p>;
 }
 
 export default App;
