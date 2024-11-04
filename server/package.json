@@ -1,0 +1,22 @@
+{
+	"name": "server",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"build": "tsc",
+		"start": "nodemon dist/index.js",
+		"dev": "nodemon --exec ts-node src/index.ts"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"description": "",
+	"dependencies": {
+		"express": "^4.21.1",
+		"shared": "file:../packages/shared"
+	},
+	"devDependencies": {
+		"nodemon": "^3.1.7",
+		"ts-node": "^10.9.2"
+	}
+}
