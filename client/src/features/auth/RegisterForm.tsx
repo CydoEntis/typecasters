@@ -34,81 +34,55 @@ function RegisterForm(props: PaperProps) {
 	});
 
 	return (
-		<Paper
-			radius="md"
-			p="xl"
-			withBorder
-			{...props}
-			w={500}
-		>
-			<Text
-				size="lg"
-				fw={500}
-			>
-				Join TypeCasters
-			</Text>
+		<form onSubmit={form.onSubmit(() => {})}>
+			<Stack gap={16}>
+				<TextInput
+					label="Email"
+					placeholder="you@example.com"
+					{...form.getInputProps("email")}
+					radius="sm"
+				/>
+				<TextInput
+					label="Display Name"
+					placeholder="TaskSlayer1337"
+					{...form.getInputProps("displayName")}
+					radius="sm"
+				/>
+			</Stack>
+			{/* <ValidatedPasswordInput form={form} /> */}
+			<PasswordInput
+				label="Confirm Password"
+				placeholder="Confirm your password"
+				mt="md"
+				{...form.getInputProps("confirmPassword")}
+				onChange={(event) => {
+					form.setFieldValue("confirmPassword", event.currentTarget.value);
+				}}
+				radius="sm"
+			/>
 
 			<Group
-				grow
-				mb="md"
-				mt="md"
+				justify="space-between"
+				mt="xl"
 			>
-				{/* <GoogleButton radius="xl">Google</GoogleButton>
-				<TwitterButton radius="xl">Twitter</TwitterButton> */}
-			</Group>
-
-			<Divider
-				label="Or continue with email"
-				labelPosition="center"
-				my="lg"
-			/>
-			<form onSubmit={form.onSubmit(() => {})}>
-				<Stack gap={16}>
-					<TextInput
-						label="Email"
-						placeholder="you@example.com"
-						{...form.getInputProps("email")}
-					/>
-					<TextInput
-						label="Display Name"
-						placeholder="TaskSlayer1337"
-						{...form.getInputProps("displayName")}
-					/>
-				</Stack>
-				{/* <ValidatedPasswordInput form={form} /> */}
-				<PasswordInput
-					label="Confirm Password"
-					placeholder="Confirm your password"
-					mt="md"
-					{...form.getInputProps("confirmPassword")}
-					onChange={(event) => {
-						form.setFieldValue("confirmPassword", event.currentTarget.value);
-					}}
-				/>
-
-				<Group
-					justify="space-between"
-					mt="xl"
+				<Anchor
+					component={NavLink}
+					type="button"
+					c="dimmed"
+					size="xs"
+					to="/login"
 				>
-					<Anchor
-						component={NavLink}
-						type="button"
-						c="dimmed"
-						size="xs"
-						to="/login"
-					>
-						Already have an account? Log in.
-					</Anchor>
-					<Button
-						type="submit"
-						radius="sm"
-						color="orange"
-					>
-						Register
-					</Button>
-				</Group>
-			</form>
-		</Paper>
+					Already have an account? Log in.
+				</Anchor>
+				<Button
+					type="submit"
+					radius="sm"
+					color="orange"
+				>
+					Register
+				</Button>
+			</Group>
+		</form>
 	);
 }
 

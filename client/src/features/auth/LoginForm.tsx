@@ -34,84 +34,54 @@ function LoginForm(props: PaperProps) {
 	});
 
 	return (
-		<Paper
-			radius="md"
-			p="xl"
-			withBorder
-			{...props}
-			w={500}
-		>
-			<Text
-				size="lg"
-				fw={500}
-			>
-				Welcome Back to TypeCasters
-			</Text>
-
+		<form onSubmit={form.onSubmit(() => {})}>
+			<Stack>
+				<TextInput
+					label="Email"
+					placeholder="hello@mantine.dev"
+					value={form.values.email}
+					onChange={(event) =>
+						form.setFieldValue("email", event.currentTarget.value)
+					}
+					error={form.errors.email && "Invalid email"}
+					radius="sm"
+				/>
+				<PasswordInput
+					label="Password"
+					placeholder="Your password"
+					value={form.values.password}
+					onChange={(event) =>
+						form.setFieldValue("password", event.currentTarget.value)
+					}
+					error={
+						form.errors.password &&
+						"Password should include at least 6 characters"
+					}
+					radius="sm"
+				/>
+			</Stack>
 			<Group
-				grow
-				mb="md"
-				mt="md"
+				justify="space-between"
+				mt="xl"
 			>
-				{/* <GoogleButton radius="xl">Google</GoogleButton>
-				<TwitterButton radius="xl">Twitter</TwitterButton> */}
-			</Group>
-
-			<Divider
-				label="Or continue with email"
-				labelPosition="center"
-				my="lg"
-			/>
-
-			<form onSubmit={form.onSubmit(() => {})}>
-				<Stack>
-					<TextInput
-						label="Email"
-						placeholder="hello@mantine.dev"
-						value={form.values.email}
-						onChange={(event) =>
-							form.setFieldValue("email", event.currentTarget.value)
-						}
-						error={form.errors.email && "Invalid email"}
-						radius="md"
-					/>
-					<PasswordInput
-						label="Password"
-						placeholder="Your password"
-						value={form.values.password}
-						onChange={(event) =>
-							form.setFieldValue("password", event.currentTarget.value)
-						}
-						error={
-							form.errors.password &&
-							"Password should include at least 6 characters"
-						}
-						radius="md"
-					/>
-				</Stack>
-				<Group
-					justify="space-between"
-					mt="xl"
+				<Anchor
+					component={NavLink}
+					type="button"
+					c="dimmed"
+					size="xs"
+					to="/register"
 				>
-					<Anchor
-						component={NavLink}
-						type="button"
-						c="dimmed"
-						size="xs"
-						to="/register"
-					>
-						Don't have an account? Register
-					</Anchor>
-					<Button
-						type="submit"
-						radius="sm"
-						color="orange"
-					>
-						Login
-					</Button>
-				</Group>
-			</form>
-		</Paper>
+					Don't have an account? Register
+				</Anchor>
+				<Button
+					type="submit"
+					radius="sm"
+					color="orange"
+				>
+					Login
+				</Button>
+			</Group>
+		</form>
 	);
 }
 

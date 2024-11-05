@@ -13,10 +13,10 @@ function AppLayout({}: Props) {
 
 	return (
 		<AppWrapper opened={opened}>
-			<Navbar
+			{/* <Navbar
 				opened={opened}
 				toggle={toggle}
-			/>
+			/> */}
 			<SideNavbar />
 			<AppShell.Main>
 				<Outlet />
