@@ -1,7 +1,6 @@
 import express from "express";
 import { User } from "shared/index";
 import { env } from "./config";
-import "dotenv/config";
 
 const app = express();
 const PORT = env.appPort || 3000;
