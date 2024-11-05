@@ -22,6 +22,22 @@ function SideNavbar({}: Props) {
 					<MantineNavLink
 						color="orange"
 						variant="light"
+						label="Login"
+						component={NavLink}
+						to="/login"
+						className="rounded"
+					/>
+					<MantineNavLink
+						color="orange"
+						variant="light"
+						label="Register"
+						component={NavLink}
+						to="/register"
+						className="rounded"
+					/>
+					<MantineNavLink
+						color="orange"
+						variant="light"
 						label="Game Board"
 						component={NavLink}
 						to="/game"
