@@ -38,15 +38,16 @@ function Navbar({ opened, toggle }: NavbarProps) {
 					<Button
 						component={NavLink}
 						to="/login"
-						variant="outline"
-						color="violet"
+						variant="filled"
+						color="orange"
 					>
 						Login
 					</Button>
 					<Button
 						component={NavLink}
 						to="/register"
-						color="violet"
+						variant="outline"
+						color="orange"
 					>
 						Register
 					</Button>
