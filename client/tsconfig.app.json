@@ -32,5 +32,5 @@
   "include": [
     "src/**/*",
     "../packages/shared/src/**/*"
-  ],
+, "postcss.config.js"  ],
 }
