@@ -25,6 +25,7 @@ function SideNavbar({}: Props) {
 						label="Game Board"
 						component={NavLink}
 						to="/game"
+						className="rounded"
 					/>
 				</Stack>
 				<Stack mt="auto"></Stack>
