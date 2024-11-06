@@ -1,11 +1,12 @@
 {
 	"name": "server",
 	"version": "1.0.0",
-	"main": "index.js",
+	"main": "src/index.js",
+	"type": "module",
 	"scripts": {
 		"build": "tsc",
 		"start": "nodemon dist/index.js",
-		"dev": "nodemon --exec ts-node src/index.ts"
+		"dev": "nodemon"
 	},
 	"keywords": [],
 	"author": "",
@@ -22,10 +23,14 @@
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
+		"@types/bcryptjs": "^2.4.6",
+		"@types/express": "^5.0.0",
+		"@types/node": "^22.9.0",
 		"@types/pg": "^8.11.10",
 		"drizzle-kit": "^0.27.1",
 		"nodemon": "^3.1.7",
 		"ts-node": "^10.9.2",
-		"tsx": "^4.19.2"
+		"tsx": "^4.19.2",
+		"typescript": "^5.6.3"
 	}
 }

@@ -1,17 +1,23 @@
 {
 	"compilerOptions": {
-		"baseUrl": ".",
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"outDir": "./dist",
+		"allowJs": true,
 		"paths": {
 			"shared/*": [
-				"../packages/shared/src/*"
+				"../packages/shared/src/*" // Alias for shared package
 			]
-		},
-		"esModuleInterop": true,
-		"skipLibCheck": true
+		}
 	},
 	"include": [
 		"src/**/*",
-		"../packages/shared/src/**/*"
+		"../packages/shared/src/**/*" // Include shared package files
 	],
 	"exclude": [
 		"node_modules"

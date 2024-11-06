@@ -1,6 +1,8 @@
 import path from "path";
 import dotenv from "dotenv";
+dotenv.config();
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 interface Env {
