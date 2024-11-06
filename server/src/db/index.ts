@@ -1,9 +1,8 @@
-// server/src/drizzle.ts
 import { Pool } from "pg";
 import * as schema from "./schema";
 
 import { drizzle } from "drizzle-orm/node-postgres";
-import { env } from "./config/config";
+import { env } from "../config/config";
 
 const pool = new Pool({
 	host: env.dbHost,
