@@ -9,7 +9,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
 	cors: {
-		origin: "http://localhost:5173",
+		origin: "http://localhost:5174",
 	},
 });
 
@@ -37,6 +37,11 @@ app.get("/", (req, res) => {
 	res.send("Server is running");
 });
 
-app.listen(PORT, () => {
+// app.listen(PORT, () => {
+// 	console.log(`Server is running on http://localhost:${PORT}`);
+// });
+
+// Runs the socket server -- Doofus
+server.listen(PORT, () => {
 	console.log(`Server is running on http://localhost:${PORT}`);
 });
