@@ -1,5 +1,5 @@
 import db from "../db/index";
-import { refreshTokens } from "../db/schemas/refreshTokens.schema";
+import { refreshTokens } from "../db/schemas/refreshTokens";
 import { eq, and } from "drizzle-orm";
 
 export type RefreshToken = {
@@ -15,13 +15,13 @@ export type RefreshToken = {
 class TokenRepository {
 	public async getRefreshToken(
 		userId: number,
-		token: string,
+		refreshToken: string,
 	): Promise<RefreshToken | null> {
 		const [existingToken] = await db
 			.select({
 				id: refreshTokens.id,
 				userId: refreshTokens.userId,
-				accessTOken: refreshTokens.accessToken,
+				accessToken: refreshTokens.accessToken,
 				refreshToken: refreshTokens.refreshToken,
 				createdAt: refreshTokens.createdAt,
 				expiresAt: refreshTokens.expiresAt,
@@ -29,7 +29,10 @@ class TokenRepository {
 			})
 			.from(refreshTokens)
 			.where(
-				and(eq(refreshTokens.userId, userId), eq(refreshTokens.token, token)),
+				and(
+					eq(refreshTokens.userId, userId),
+					eq(refreshTokens.refreshToken, refreshToken),
+				),
 			);
 
 		return existingToken || null;
@@ -38,7 +41,7 @@ class TokenRepository {
 	public async saveRefreshToken(token: RefreshToken): Promise<void> {
 		await db.insert(refreshTokens).values({
 			userId: token.userId,
-			accessToken: token.accesToken,
+			accessToken: token.accessToken,
 			refreshToken: token.refreshToken,
 			expiresAt: token.expiresAt,
 		});

@@ -1,1 +1,0 @@
-ALTER TABLE "refresh_tokens" ADD COLUMN "is_expired" boolean DEFAULT false;
