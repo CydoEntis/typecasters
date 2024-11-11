@@ -27,7 +27,7 @@ const loginUser = async (
 };
 
 const logoutUser = async (tokens: Tokens): Promise<boolean> => {
-	const response = (await apiClient.post(`${endpoints.auth}/revoke`, tokens))
+	const response = (await apiClient.post(`${endpoints.auth}/logout`, tokens))
 		.data;
 
 	return response;
