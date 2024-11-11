@@ -21,17 +21,19 @@ class TokenService {
 		}
 	}
 
-	public async saveRefreshToken(
+	public async saveTokens(
 		userId: number,
+		accessToken: string,
 		refreshToken: string,
 	): Promise<void> {
 		try {
-			const expiresAt = new Date();
-			expiresAt.setDate(expiresAt.getDate() + 7);
+const expiresAt = new Date();
+expiresAt.setMinutes(expiresAt.getMinutes() + 15);
 
 			const newRefreshToken = {
 				userId,
-				token: refreshToken,
+				accessToken: accessToken,
+				refreshToken: refreshToken,
 				expiresAt,
 			} as RefreshToken;
 
@@ -62,7 +64,7 @@ class TokenService {
 			const newAccessToken = this.generateAccessToken(decodedToken.userId);
 			const newRefreshToken = this.generateRefreshToken(decodedToken.userId);
 
-			await this.saveRefreshToken(decodedToken.userId, newRefreshToken);
+			await this.saveTokens(decodedToken.userId, newAccessToken, newRefreshToken);
 
 			return {
 				accessToken: newAccessToken,

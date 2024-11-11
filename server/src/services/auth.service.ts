@@ -103,7 +103,7 @@ class AuthService {
 			const accessToken = tokenService.generateAccessToken(existingUser.id);
 			const refreshToken = tokenService.generateRefreshToken(existingUser.id);
 
-			await tokenService.saveRefreshToken(existingUser.id, refreshToken);
+			await tokenService.saveTokens(existingUser.id, accessToken, refreshToken);
 
 			const loggedInUser = {
 				email: existingUser.email,

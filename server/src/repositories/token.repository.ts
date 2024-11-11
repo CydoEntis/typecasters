@@ -5,7 +5,8 @@ import { eq, and } from "drizzle-orm";
 export type RefreshToken = {
 	id: number;
 	userId: number;
-	token: string;
+	accessToken: string;
+	refreshToken: string;
 	createdAt: Date;
 	expiresAt: Date;
 	isExpired: boolean;
@@ -20,7 +21,8 @@ class TokenRepository {
 			.select({
 				id: refreshTokens.id,
 				userId: refreshTokens.userId,
-				token: refreshTokens.token,
+				accessTOken: refreshTokens.accessToken,
+				refreshToken: refreshTokens.refreshToken,
 				createdAt: refreshTokens.createdAt,
 				expiresAt: refreshTokens.expiresAt,
 				isExpired: refreshTokens.isExpired,
@@ -36,7 +38,8 @@ class TokenRepository {
 	public async saveRefreshToken(token: RefreshToken): Promise<void> {
 		await db.insert(refreshTokens).values({
 			userId: token.userId,
-			token: token.token,
+			accessToken: token.accesToken,
+			refreshToken: token.refreshToken,
 			expiresAt: token.expiresAt,
 		});
 	}
@@ -50,7 +53,7 @@ class TokenRepository {
 			.where(
 				and(
 					eq(refreshTokens.id, token.id),
-					eq(refreshTokens.token, token.token),
+					eq(refreshTokens.refreshToken, token.refreshToken),
 				),
 			);
 	}
