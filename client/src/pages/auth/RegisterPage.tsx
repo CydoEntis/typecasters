@@ -6,11 +6,12 @@ type Props = {};
 function RegisterPage({}: Props) {
 	return (
 		<Box w="100%">
-			<Center mt={32}>
+			<Center pt={32}>
 				<Paper
 					radius="md"
 					p="xl"
-					withBorder
+					shadow="xl"
+					bg="card"
 					w={500}
 				>
 					<Text
