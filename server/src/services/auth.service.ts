@@ -15,7 +15,7 @@ export type Tokens = {
 };
 
 class AuthService {
-	async register(credentials: RegisterCredentials) {
+	public async register(credentials: RegisterCredentials) {
 		try {
 			const validationResult = registerSchema.safeParse(credentials);
 			if (!validationResult.success) {
@@ -50,7 +50,9 @@ class AuthService {
 		}
 	}
 
-	async login(credentials: LoginCredentials): Promise<AuthenticatedUser> {
+	public async login(
+		credentials: LoginCredentials,
+	): Promise<AuthenticatedUser> {
 		try {
 			const validationResult = loginSchema.safeParse(credentials);
 			if (!validationResult.success) {
@@ -96,7 +98,7 @@ class AuthService {
 		}
 	}
 
-	async refreshTokens(refreshToken: string): Promise<Tokens> {
+	public async refreshTokens(refreshToken: string): Promise<Tokens> {
 		try {
 			if (!refreshToken) throw new Error("Refresh token required.");
 
@@ -106,6 +108,24 @@ class AuthService {
 				throw new Error("Unable to refresh tokens: " + error.message);
 			} else {
 				throw new Error("Unable to refresh access and refresh token");
+			}
+		}
+	}
+
+	public async logout(refreshToken: string) {
+		try {
+			if (!refreshToken) throw new Error("Refresh token required.");
+
+			const existingToken = await tokenService.getRefreshToken(refreshToken);
+
+			if (!existingToken) throw new Error("Refresh token does not exist.");
+
+			await tokenService.revokeRefreshToken(existingToken);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				throw new Error("Error during logout: " + error.message);
+			} else {
+				throw new Error("Unknown error during logout");
 			}
 		}
 	}
