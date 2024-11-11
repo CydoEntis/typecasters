@@ -6,12 +6,13 @@ type Props = {};
 function LoginPage({}: Props) {
 	return (
 		<Box w="100%">
-			<Center mt={32}>
+			<Center pt={32}>
 				<Paper
 					radius="md"
 					p="xl"
-					withBorder
+					shadow="xl"
 					w={500}
+					bg="card"
 				>
 					<Text
 						size="lg"

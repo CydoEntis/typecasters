@@ -12,6 +12,10 @@ function ThemeToggle() {
 			variant="default"
 			size="xl"
 			aria-label="Toggle color scheme"
+			bg={"orange"}
+			style={{
+				border: "none"
+			}}
 		>
 			{isLightMode ? <Moon size={20} /> : <Sun size={20} />}
 		</ActionIcon>

@@ -1,0 +1,10 @@
+.navLinkRoot {
+  /* --nl-bg: #1A0D1A;
+  --nl-hover: #2A1A2A; */
+  background-color: "red";
+  color: #FFFFFF;
+}
+
+.navLinkRoot:hover {
+  background-color: #953a09;
+}

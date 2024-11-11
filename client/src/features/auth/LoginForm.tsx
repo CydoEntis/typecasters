@@ -8,12 +8,13 @@ import {
 } from "@mantine/core";
 import { NavLink, useNavigate } from "react-router-dom";
 
-
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { useForm } from "@mantine/form";
 import { AxiosError } from "axios";
 import useUserStore from "../../stores/useUserStore";
+
+import classes from "./input.module.css";
 
 const loginFormSchema = z.object({
 	email: z
@@ -64,11 +65,17 @@ function LoginForm({}: Props) {
 	return (
 		<form onSubmit={form.onSubmit(onSubmit)}>
 			<TextInput
+				classNames={{
+					input: classes.input,
+				}}
 				label="Email"
 				placeholder="you@example.com"
 				{...form.getInputProps("email")} // Register email input
 			/>
 			<PasswordInput
+				classNames={{
+					input: classes.input,
+				}}
 				label="Password"
 				placeholder="Your password"
 				withAsterisk
@@ -83,7 +90,6 @@ function LoginForm({}: Props) {
 				justify="space-between"
 				mt="lg"
 			>
-				<Checkbox label="Remember me" />
 				<Anchor
 					component={NavLink}
 					size="sm"
@@ -97,7 +103,7 @@ function LoginForm({}: Props) {
 				fullWidth
 				mt="xl"
 				color="orange"
-				variant="light"
+				variant="filled"
 				type="submit"
 			>
 				Sign in

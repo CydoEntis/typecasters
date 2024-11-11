@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root[data-mantine-color-scheme="dark"] {
+  --nl-bg: #1A0D1A;
+  --nl-hover: #2A1A2A;
+}
+
+:root {
+  --nl-bg: #1A0D1A;        /* Dark purple background for links */
+  --nl-color: #FFFFFF;      /* White text color for links */
+  --nl-hover: "red" !important;      /* Slightly lighter dark purple for hover effect */
+}
+
+.mantine-NavLink-root {
+  --nl-bg: #1A0D1A;           /* Dark purple background */
+  --nl-color: #FFFFFF;         /* White text color */
+  --nl-hover: #2A1A2A;         /* Lighter dark purple on hover */
+}
+
+.mantine-NavLink-root[data-active="true"] {
+  background-color: var(--nl-hover); /* Use hover color when active */
+}
+
