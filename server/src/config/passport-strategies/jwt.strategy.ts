@@ -1,6 +1,6 @@
 import passport from "passport";
 import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
-import userRepository from "../repositories/user.repository";
+import userRepository from "../../repositories/user.repository";
 
 type JwtPayload = {
 	userId: number;

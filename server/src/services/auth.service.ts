@@ -3,39 +3,10 @@ import tokenService from "./token.service";
 import { z } from "zod";
 import userRepository from "../repositories/user.repository";
 import { v4 as uuidv4 } from "uuid";
+import { LoginCredentials, RegisterCredentials, loginSchema, registerSchema } from "shared/scehmas/auth.schemas";
+import { AuthenticatedUser, Tokens } from "shared/types";
 
-export type AuthenticatedUser = {
-	email: string;
-	username: string;
-	accessToken: string;
-	refreshToken: string;
-};
 
-const registerSchema = z
-	.object({
-		email: z.string().email(),
-		username: z.string().min(3),
-		password: z.string().min(6),
-		confirmPassword: z.string().min(6),
-	})
-	.refine((data) => data.password === data.confirmPassword, {
-		message: "Passwords don't match",
-		path: ["confirmPassword"],
-	});
-
-export type RegisterCredentials = z.infer<typeof registerSchema>;
-
-const loginSchema = z.object({
-	email: z.string().email("Please provide a valid email"),
-	password: z.string().min(1, "Please provide a password"),
-});
-
-export type LoginCredentials = z.infer<typeof loginSchema>;
-
-export type Tokens = {
-	accessToken: string;
-	refreshToken: string;
-};
 
 class AuthService {
 	private jwtSecret: string = "secret";
