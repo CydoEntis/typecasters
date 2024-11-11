@@ -4,7 +4,7 @@ import { AuthenticatedUser, LoginCredentials, RegisterCredentials, Tokens } from
 import localStorageService from "../services/local-storage.service";
 import authService from "../services/auth.service";
 
-type AuthState = {
+type UserState = {
 	user: AuthenticatedUser | null;
 	loading: {
 		session: boolean;
@@ -12,7 +12,6 @@ type AuthState = {
 		register: boolean;
 		login: boolean;
 		logout: boolean;
-		getUser: boolean;
 	};
 	error: string | null;
 	restoreSession: () => void;
@@ -22,7 +21,7 @@ type AuthState = {
 	logout: () => Promise<void>;
 };
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useUserStore = create<UserState>((set, get) => ({
 	user: null,
 	loading: {
 		session: false,
@@ -30,7 +29,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 		register: false,
 		login: false,
 		logout: false,
-		getUser: false,
 	},
 	error: null,
 
@@ -167,4 +165,4 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 	},
 }));
 
-export default useAuthStore;
+export default useUserStore;

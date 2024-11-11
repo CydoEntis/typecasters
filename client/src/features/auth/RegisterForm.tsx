@@ -2,26 +2,21 @@ import { useForm } from "@mantine/form";
 import {
 	TextInput,
 	PasswordInput,
-	Text,
-	Paper,
 	Group,
-	PaperProps,
 	Button,
-	Divider,
 	Stack,
 	Anchor,
 } from "@mantine/core";
 import { NavLink } from "react-router-dom";
-// import { GoogleButton } from "./GoogleButton";
-// import { TwitterButton } from "./TwitterButton";
 
-function RegisterForm(props: PaperProps) {
+
+function RegisterForm() {
 	const form = useForm({
 		initialValues: {
 			email: "",
 			name: "",
 			password: "",
-			terms: true,
+			confirmPassword: "",
 		},
 
 		validate: {
@@ -50,6 +45,17 @@ function RegisterForm(props: PaperProps) {
 				/>
 			</Stack>
 			{/* <ValidatedPasswordInput form={form} /> */}
+			<PasswordInput
+				label="Password"
+				placeholder="Your Password"
+				mt="md"
+				{...form.getInputProps("password")}
+				onChange={(event) => {
+					form.setFieldValue("password", event.currentTarget.value);
+				}}
+				radius="sm"
+			/>
+
 			<PasswordInput
 				label="Confirm Password"
 				placeholder="Confirm your password"

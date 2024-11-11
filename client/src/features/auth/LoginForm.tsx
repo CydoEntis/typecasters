@@ -1,86 +1,107 @@
-import { useForm } from "@mantine/form";
 import {
-	TextInput,
-	PasswordInput,
-	Text,
-	Paper,
-	Group,
-	PaperProps,
-	Button,
-	Divider,
 	Anchor,
-	Stack,
+	Button,
+	Checkbox,
+	Group,
+	PasswordInput,
+	TextInput,
 } from "@mantine/core";
-import { NavLink } from "react-router-dom";
-// import { GoogleButton } from "./GoogleButton";
-// import { TwitterButton } from "./TwitterButton";
+import { NavLink, useNavigate } from "react-router-dom";
 
-function LoginForm(props: PaperProps) {
-	const form = useForm({
+
+import { z } from "zod";
+import { zodResolver } from "mantine-form-zod-resolver";
+import { useForm } from "@mantine/form";
+import { AxiosError } from "axios";
+import useUserStore from "../../stores/useUserStore";
+
+const loginFormSchema = z.object({
+	email: z
+		.string()
+		.min(1, "Email is required")
+		.email("Please enter a valid email"),
+	password: z.string().min(1, "Password is required"),
+});
+type LoginFormData = z.infer<typeof loginFormSchema>;
+
+type Props = {};
+
+function LoginForm({}: Props) {
+	const { login: loginUser } = useUserStore();
+	const navigate = useNavigate();
+
+	const form = useForm<LoginFormData>({
+		validate: zodResolver(loginFormSchema),
 		initialValues: {
 			email: "",
-			name: "",
 			password: "",
-			terms: true,
-		},
-
-		validate: {
-			email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
-			password: (val) =>
-				val.length <= 6
-					? "Password should include at least 6 characters"
-					: null,
 		},
 	});
 
+	async function onSubmit(data: LoginFormData) {
+		try {
+			await loginUser(data);
+
+			form.reset();
+			navigate("/dashboard");
+		} catch (error) {
+			console.error(error);
+			if (error instanceof AxiosError && error.response?.data?.errors) {
+				const errors = error.response.data.errors as Record<string, string[]>;
+				const fieldErrors: Record<string, string> = {};
+
+				for (const [key, messages] of Object.entries(errors)) {
+					if (Array.isArray(messages) && messages.length > 0) {
+						fieldErrors[key] = messages[0];
+					}
+				}
+
+				form.setErrors(fieldErrors);
+			}
+		}
+	}
+
 	return (
-		<form onSubmit={form.onSubmit(() => {})}>
-			<Stack>
-				<TextInput
-					label="Email"
-					placeholder="hello@mantine.dev"
-					value={form.values.email}
-					onChange={(event) =>
-						form.setFieldValue("email", event.currentTarget.value)
-					}
-					error={form.errors.email && "Invalid email"}
-					radius="sm"
-				/>
-				<PasswordInput
-					label="Password"
-					placeholder="Your password"
-					value={form.values.password}
-					onChange={(event) =>
-						form.setFieldValue("password", event.currentTarget.value)
-					}
-					error={
-						form.errors.password &&
-						"Password should include at least 6 characters"
-					}
-					radius="sm"
-				/>
-			</Stack>
+		<form onSubmit={form.onSubmit(onSubmit)}>
+			<TextInput
+				label="Email"
+				placeholder="you@example.com"
+				{...form.getInputProps("email")} // Register email input
+			/>
+			<PasswordInput
+				label="Password"
+				placeholder="Your password"
+				withAsterisk
+				required
+				mt="md"
+				{...form.getInputProps("password")}
+				onChange={(event) => {
+					form.setFieldValue("password", event.currentTarget.value);
+				}}
+			/>
 			<Group
 				justify="space-between"
-				mt="xl"
+				mt="lg"
 			>
+				<Checkbox label="Remember me" />
 				<Anchor
 					component={NavLink}
-					type="button"
-					c="dimmed"
-					size="xs"
-					to="/register"
+					size="sm"
+					c="orange"
+					to={"/forgot-password"}
 				>
-					Don't have an account? Register
+					Forgot password?
 				</Anchor>
-				<Button
-					type="submit"
-					radius="sm"
-					color="orange"
-				>
-					Login
-				</Button>
 			</Group>
+			<Button
+				fullWidth
+				mt="xl"
+				color="orange"
+				variant="light"
+				type="submit"
+			>
+				Sign in
+			</Button>
 		</form>
 	);
 }
