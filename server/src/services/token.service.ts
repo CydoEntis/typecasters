@@ -2,16 +2,22 @@ import jwt from "jsonwebtoken";
 import tokenRepository, {
 	RefreshToken,
 } from "../repositories/token.repository";
+import { decode } from "punycode";
 
 class TokenService {
-	public async getRefreshToken(token: string): Promise<RefreshToken | null> {
+	public async getRefreshToken(
+		accessToken: string,
+	): Promise<RefreshToken | null> {
 		try {
-			const decodedToken = this.decodeRefreshToken(token) as { userId: number };
+			const decodedToken = this.decodeRefreshToken(accessToken);
 
-			console.log("Decoded Token: ", decodedToken)
-			console.log("Token: ", token)
+			console.log("Decoded Token: ", decodedToken);
+			console.log("Token: ", accessToken);
 
-			return await tokenRepository.getRefreshToken(decodedToken.userId, token);
+			return await tokenRepository.getRefreshToken(
+				decodedToken.userId,
+				decodedToken.sessionId,
+			);
 		} catch (error: unknown) {
 			if (error instanceof Error) {
 				throw new Error("Error while getting refresh token: " + error.message);
@@ -21,19 +27,15 @@ class TokenService {
 		}
 	}
 
-	public async saveTokens(
-		userId: number,
-		accessToken: string,
-		refreshToken: string,
-	): Promise<void> {
+	public async saveTokens(userId: number, refreshToken: string, sessionId: string): Promise<void> {
 		try {
-const expiresAt = new Date();
-expiresAt.setMinutes(expiresAt.getMinutes() + 15);
+			const expiresAt = new Date();
+			expiresAt.setMinutes(expiresAt.getMinutes() + 15);
 
 			const newRefreshToken = {
 				userId,
-				accessToken: accessToken,
-				refreshToken: refreshToken,
+				sessionId,
+				token: refreshToken,
 				expiresAt,
 			} as RefreshToken;
 
@@ -49,7 +51,7 @@ expiresAt.setMinutes(expiresAt.getMinutes() + 15);
 
 	public async refreshTokens(token: string) {
 		try {
-			const decodedToken = this.decodeRefreshToken(token) as { userId: number };
+			const decodedToken = this.decodeRefreshToken(token);
 			const existingToken = await tokenRepository.getRefreshToken(
 				decodedToken.userId,
 				token,
@@ -61,10 +63,10 @@ expiresAt.setMinutes(expiresAt.getMinutes() + 15);
 
 			await this.revokeRefreshToken(existingToken);
 
-			const newAccessToken = this.generateAccessToken(decodedToken.userId);
-			const newRefreshToken = this.generateRefreshToken(decodedToken.userId);
+			const newAccessToken = this.generateAccessToken(decodedToken.userId, decodedToken.sessionId);
+			const newRefreshToken = this.generateRefreshToken(decodedToken.userId, decodedToken.sessionId);
 
-			await this.saveTokens(decodedToken.userId, newAccessToken, newRefreshToken);
+			await this.saveTokens(decodedToken.userId, newRefreshToken, decodedToken.sessionId);
 
 			return {
 				accessToken: newAccessToken,
@@ -91,9 +93,13 @@ expiresAt.setMinutes(expiresAt.getMinutes() + 15);
 		}
 	}
 
-	public generateAccessToken(userId: number): string {
+	public generateAccessToken(userId: number, sessionId: string): string {
 		try {
-			return jwt.sign({ userId }, "secret", { expiresIn: "15min" });
+			return jwt.sign(
+				{ userId, sessionId }, // Include session ID in claims
+				process.env.ACCESS_TOKEN_SECRET || "secret",
+				{ expiresIn: "15min" },
+			);
 		} catch (error: unknown) {
 			if (error instanceof Error) {
 				throw new Error(
@@ -105,9 +111,13 @@ expiresAt.setMinutes(expiresAt.getMinutes() + 15);
 		}
 	}
 
-	public generateRefreshToken(userId: number): string {
+	public generateRefreshToken(userId: number, sessionId: string): string {
 		try {
-			return jwt.sign({ id: userId }, "secret", { expiresIn: "90min" });
+			return jwt.sign(
+				{ userId, sessionId }, // Include session ID in claims
+				process.env.REFRESH_TOKEN_SECRET || "secret",
+				{ expiresIn: "90min" },
+			);
 		} catch (error: unknown) {
 			if (error instanceof Error) {
 				throw new Error(
@@ -119,12 +129,16 @@ expiresAt.setMinutes(expiresAt.getMinutes() + 15);
 		}
 	}
 
-	public decodeRefreshToken(token: string): string | jwt.JwtPayload {
+	public decodeRefreshToken(token: string): {
+		userId: number;
+		sessionId: string;
+	} {
 		try {
-			return jwt.verify(
+			const decoded = jwt.verify(
 				token,
 				process.env.REFRESH_TOKEN_SECRET || "secret",
-			);
+			) as { userId: number; sessionId: string };
+			return decoded;
 		} catch (error: unknown) {
 			if (error instanceof Error) {
 				throw new Error("Error while decoding refresh token: " + error.message);

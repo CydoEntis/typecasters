@@ -5,8 +5,8 @@ import { eq, and } from "drizzle-orm";
 export type RefreshToken = {
 	id: number;
 	userId: number;
-	accessToken: string;
-	refreshToken: string;
+	sessionId: string; // Include sessionId here
+	token: string;
 	createdAt: Date;
 	expiresAt: Date;
 	isExpired: boolean;
@@ -15,14 +15,14 @@ export type RefreshToken = {
 class TokenRepository {
 	public async getRefreshToken(
 		userId: number,
-		refreshToken: string,
+		sessionId: string,
 	): Promise<RefreshToken | null> {
 		const [existingToken] = await db
 			.select({
 				id: refreshTokens.id,
 				userId: refreshTokens.userId,
-				accessToken: refreshTokens.accessToken,
-				refreshToken: refreshTokens.refreshToken,
+				sessionId: refreshTokens.sessionId, 
+				token: refreshTokens.token,
 				createdAt: refreshTokens.createdAt,
 				expiresAt: refreshTokens.expiresAt,
 				isExpired: refreshTokens.isExpired,
@@ -31,7 +31,7 @@ class TokenRepository {
 			.where(
 				and(
 					eq(refreshTokens.userId, userId),
-					eq(refreshTokens.refreshToken, refreshToken),
+					eq(refreshTokens.sessionId, sessionId), 
 				),
 			);
 
@@ -41,9 +41,10 @@ class TokenRepository {
 	public async saveRefreshToken(token: RefreshToken): Promise<void> {
 		await db.insert(refreshTokens).values({
 			userId: token.userId,
-			accessToken: token.accessToken,
-			refreshToken: token.refreshToken,
+			sessionId: token.sessionId,
+			token: token.token,
 			expiresAt: token.expiresAt,
+			isExpired: false, 
 		});
 	}
 
@@ -51,12 +52,13 @@ class TokenRepository {
 		await db
 			.update(refreshTokens)
 			.set({
-				isExpired: true,
+				isExpired: true, // Mark token as expired
 			})
 			.where(
 				and(
-					eq(refreshTokens.id, token.id),
-					eq(refreshTokens.refreshToken, token.refreshToken),
+					eq(refreshTokens.userId, token.userId),
+					eq(refreshTokens.sessionId, token.sessionId), 
+					eq(refreshTokens.token, token.token),
 				),
 			);
 	}

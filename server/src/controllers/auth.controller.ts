@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import authService from "../services/auth.service";
-import { AuthenticatedRequest } from "../middleware/auth/extractRefreshToken";
+import { AuthenticatedRequest } from "../middleware/auth/extractAccessToken";
 
 class AuthController {
 	async register(req: Request, res: Response): Promise<void> {
@@ -39,15 +39,16 @@ class AuthController {
 		}
 	}
 
+	// This is def scuffed and needs to be rewritten
 	async refreshTokens(req: AuthenticatedRequest, res: Response): Promise<void> {
 		try {
-			const { refreshToken } = req;
+			const { accessToken } = req;
 
-			if (!refreshToken) {
+			if (!accessToken) {
 				res.status(401).json({ message: "Refresh token required" });
 				return;
 			}
-			const tokens = await authService.refreshTokens(refreshToken);
+			const tokens = await authService.refreshTokens(accessToken);
 			res.status(201).json(tokens);
 		} catch (error: unknown) {
 			if (error instanceof Error) {
@@ -60,14 +61,14 @@ class AuthController {
 
 	async logout(req: AuthenticatedRequest, res: Response): Promise<void> {
 		try {
-			const { refreshToken } = req;
+			const { accessToken } = req;
 
-			if (!refreshToken) {
+			if (!accessToken) {
 				res.status(401).json({ message: "Refresh token required" });
 				return;
 			}
 
-			await authService.logout(refreshToken);
+			await authService.logout(accessToken);
 			res.status(201).json({ message: "Logout successful" });
 		} catch (error: unknown) {
 			if (error instanceof Error) {

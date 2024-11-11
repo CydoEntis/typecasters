@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import tokenService from "./token.service";
 import { z } from "zod";
 import userRepository from "../repositories/user.repository";
+import { v4 as uuidv4 } from "uuid";
 
 export type AuthenticatedUser = {
 	email: string;
@@ -102,10 +103,20 @@ class AuthService {
 				throw new Error("Email or password is incorrect.");
 			}
 
-			const accessToken = tokenService.generateAccessToken(existingUser.id);
-			const refreshToken = tokenService.generateRefreshToken(existingUser.id);
+			const sessionId = uuidv4();
 
-			await tokenService.saveTokens(existingUser.id, accessToken, refreshToken);
+			console.log(sessionId);
+
+			const accessToken = tokenService.generateAccessToken(
+				existingUser.id,
+				sessionId,
+			);
+			const refreshToken = tokenService.generateRefreshToken(
+				existingUser.id,
+				sessionId,
+			);
+
+			await tokenService.saveTokens(existingUser.id, refreshToken, sessionId);
 
 			const loggedInUser = {
 				email: existingUser.email,
@@ -138,12 +149,12 @@ class AuthService {
 		}
 	}
 
-	public async logout(refreshToken: string) {
+	public async logout(accessToken: string) {
 		try {
-			console.log(refreshToken);
-			if (!refreshToken) throw new Error("Refresh token required.");
+			console.log(accessToken);
+			if (!accessToken) throw new Error("Refresh token required.");
 
-			const existingToken = await tokenService.getRefreshToken(refreshToken);
+			const existingToken = await tokenService.getRefreshToken(accessToken);
 
 			if (!existingToken) throw new Error("Refresh token does not exist.");
 

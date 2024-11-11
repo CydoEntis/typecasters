@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 
 export interface AuthenticatedRequest extends Request {
-	refreshToken?: string;
+	accessToken?: string;
 }
 
-const extractRefreshToken = (
+const extractAccessToken = (
 	req: AuthenticatedRequest,
 	res: Response,
 	next: NextFunction,
@@ -16,16 +16,16 @@ const extractRefreshToken = (
 		return;
 	}
 
-	const refreshToken = authorizationHeader.split(" ")[1];
+	const accessToken = authorizationHeader.split(" ")[1];
 
-	if (!refreshToken) {
+	if (!accessToken) {
 		res.status(401).json({ message: "Refresh token required" });
 		return;
 	}
 
-	req.refreshToken = refreshToken;
+	req.accessToken = accessToken;
 
 	next();
 };
 
-export default extractRefreshToken;
+export default extractAccessToken;
