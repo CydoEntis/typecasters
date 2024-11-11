@@ -1,14 +1,18 @@
 import bcrypt from "bcryptjs";
 import userRepository from "../repositories/user.repository";
 import tokenService from "./token.service";
-import { LoginCredentials, RegisterCredentials, registerSchema } from "shared/scehmas";
+import {
+	LoginCredentials,
+	RegisterCredentials,
+	registerSchema,
+} from "shared/scehmas";
 import { AuthenticatedUser } from "shared/types";
 import jwt from "jsonwebtoken";
 
-
-
-
-
+export type Tokens = {
+	accessToken: string;
+	refreshToken: string;
+};
 
 class AuthService {
 	// TODO: Update this so the user gets logged in automatically after registering.
@@ -70,13 +74,17 @@ class AuthService {
 		return loggedInUser;
 	}
 
-	async refreshToken(refreshToken: string) {
-		// if(!refreshToken) throw new Error("Refresh token required.")
+	async refreshToken(refreshToken: string): Promise<Tokens> {
+		if (!refreshToken) throw new Error("Refresh token required.");
 
-		// try {
-		// 	const decodedToken = jwt.verify(refreshToken, "secret")
-		// 	const user = await userRepository.
-		// }
+		try {
+			return await tokenService.refreshTokens(refreshToken);
+		} catch (error: any) {
+			throw new Error(
+				"Unable to refresh access and refresh token",
+				error.message,
+			);
+		}
 	}
 
 	private async hashPassword(password: string): Promise<string> {

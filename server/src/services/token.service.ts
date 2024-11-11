@@ -4,6 +4,15 @@ import tokenRepository, {
 } from "../repositories/token.repository";
 
 class TokenService {
+	public async getRefreshToken(token: string): Promise<RefreshToken | null> {
+		try {
+			const decodedToken = this.decodeRefreshToken(token) as { id: number };
+			return await tokenRepository.getRefreshToken(decodedToken.id, token);
+		} catch (error: any) {
+			throw new Error("Error while saving refresh token: " + error.message);
+		}
+	}
+
 	public async saveRefreshToken(
 		userId: number,
 		refreshToken: string,
@@ -24,25 +33,36 @@ class TokenService {
 		}
 	}
 
-	public async refreshAccessToken(token: string) {
+	public async refreshTokens(token: string) {
 		try {
-			const decoded = this.decodeRefreshToken(token) as { id: number };
+			const decodedToken = this.decodeRefreshToken(token) as { userId: number };
 			const existingToken = await tokenRepository.getRefreshToken(
-				decoded.id,
+				decodedToken.userId,
 				token,
 			);
 
-			if (!existingToken || existingToken.userId !== decoded.id) {
+			if (!existingToken || existingToken.userId !== decodedToken.userId) {
 				throw new Error("Invalid refresh token");
 			}
 
-			return this.generateAccessToken(decoded.id);
+			await this.revokeRefreshToken(existingToken);
+
+			const newAccessToken = this.generateAccessToken(decodedToken.userId);
+			const newRefreshToken = this.generateRefreshToken(decodedToken.userId)
+
+			await this.saveRefreshToken(decodedToken.userId, newRefreshToken)
+
+			return {
+				accessToken: newAccessToken,
+				refreshToken: newRefreshToken
+			}
+
 		} catch (error: any) {
 			throw new Error("Error while refreshing access token: " + error.message);
 		}
 	}
 
-	public async revokeAccessToken(token: RefreshToken) {
+	public async revokeRefreshToken(token: RefreshToken) {
 		try {
 			await tokenRepository.revokeRefreshToken(token);
 		} catch (error: any) {
