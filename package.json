@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"app": "concurrently \"npm run dev -w client\" \"npm run dev -w server\""
 	},
 	"keywords": [],
 	"author": "",
@@ -13,6 +13,9 @@
 	"workspaces": [
 		"client",
 		"server",
-    "packages/*"
-	]
+		"packages/*"
+	],
+	"devDependencies": {
+		"concurrently": "^9.1.0"
+	}
 }
