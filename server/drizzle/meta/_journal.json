@@ -22,6 +22,20 @@
       "when": 1731293705536,
       "tag": "0002_glorious_umar",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1731327056074,
+      "tag": "0003_minor_vengeance",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1731327503984,
+      "tag": "0004_dapper_praxagora",
+      "breakpoints": true
     }
   ]
 }
