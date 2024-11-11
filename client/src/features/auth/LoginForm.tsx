@@ -43,7 +43,7 @@ function LoginForm({}: Props) {
 			await loginUser(data);
 
 			form.reset();
-			// navigate("/dashboard");
+			navigate("/game");
 		} catch (error) {
 			console.error(error);
 			if (error instanceof AxiosError && error.response?.data?.errors) {

@@ -13,28 +13,31 @@ const registerUser = async (
 	const response = (
 		await apiClient.post(`${endpoints.auth}/register`, credentials)
 	).data;
-	if (!response.isSuccess) throw new Error();
-	return response.result;
+
+	return response;
 };
 
-const loginUser = async (credentials: LoginCredentials): Promise<AuthenticatedUser> => {
-	const response = (await apiClient.post(`${endpoints.auth}/login`, credentials)).data;
+const loginUser = async (
+	credentials: LoginCredentials,
+): Promise<AuthenticatedUser> => {
+	const response = (
+		await apiClient.post(`${endpoints.auth}/login`, credentials)
+	).data;
 	return response;
 };
 
 const logoutUser = async (tokens: Tokens): Promise<boolean> => {
 	const response = (await apiClient.post(`${endpoints.auth}/revoke`, tokens))
 		.data;
-	if (!response.isSuccess) throw new Error();
 
-	return response.isSuccess;
+	return response;
 };
 
 const refreshTokens = async (tokens: Tokens): Promise<Tokens> => {
 	const response = (await apiClient.post(`${endpoints.auth}/refresh`, tokens))
 		.data;
-	if (!response.isSuccess) throw new Error();
-	return response.result;
+
+	return response;
 };
 
 export default { registerUser, loginUser, logoutUser, refreshTokens };
