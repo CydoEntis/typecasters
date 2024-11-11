@@ -1,9 +1,6 @@
 import { create } from "zustand";
-import { AuthenticatedUser, Tokens } from "shared/types";
-import {
-	LoginCredentials,
-	RegisterCredentials,
-} from "shared/scehmas/auth.schemas";
+import { AuthenticatedUser, LoginCredentials, RegisterCredentials, Tokens } from "shared/types";
+
 import localStorageService from "../services/local-storage.service";
 import authService from "../services/auth.service";
 

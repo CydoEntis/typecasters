@@ -1,7 +1,7 @@
-import { AuthenticatedUser, Tokens } from "shared/types";
+import { AuthenticatedUser, LoginCredentials, RegisterCredentials, Tokens } from "shared/types";
 import apiClient from "../api/apiClient";
 import endpoints from "../api/endpoints";
-import { LoginCredentials, RegisterCredentials } from "shared/scehmas/auth.schemas";
+
 
 const registerUser = async (
 	credentials: RegisterCredentials,

@@ -1,4 +1,3 @@
-
 export type AuthenticatedUser = {
 	email: string;
 	username: string;
@@ -12,5 +11,12 @@ export type Tokens = {
 	refreshToken: string;
 };
 
+export type LoginCredentials = {
+	email: string;
+	password: string;
+};
 
-
+export type RegisterCredentials = LoginCredentials & {
+	username: string;
+	confirmPassword: string;
+};
