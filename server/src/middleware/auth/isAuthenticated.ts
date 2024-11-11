@@ -1,4 +1,4 @@
-import passport from "../../config/passport.config";
+import passport from "../../config/passport-strategies/jwt.strategy";
 
 const isAuthenticated = passport.authenticate("jwt", { session: false });
 

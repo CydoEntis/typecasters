@@ -1,6 +1,7 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import authService from "../services/auth.service";
 import { AuthenticatedRequest } from "../middleware/auth/extractAccessToken";
+import passport from "../config/passport-strategies/local.strategy"
 
 class AuthController {
 	async register(req: Request, res: Response): Promise<void> {
@@ -21,22 +22,33 @@ class AuthController {
 		}
 	}
 
-	async login(req: Request, res: Response): Promise<void> {
-		try {
-			const credentials = req.body;
-			const loggedInUser = await authService.login(credentials);
+	// async login(req: Request, res: Response): Promise<void> {
+	// 	try {
+	// 		const credentials = req.body;
+	// 		const loggedInUser = await authService.login(credentials);
 
-			res.status(201).json({
-				message: "User logged in successfully",
-				user: loggedInUser,
-			});
-		} catch (error: unknown) {
-			if (error instanceof Error) {
-				res.status(400).json({ error: error.message });
-			} else {
-				res.status(400).json({ error: "Unknown error occurred" });
-			}
-		}
+	// 		res.status(201).json({
+	// 			message: "User logged in successfully",
+	// 			user: loggedInUser,
+	// 		});
+	// 	} catch (error: unknown) {
+	// 		if (error instanceof Error) {
+	// 			res.status(400).json({ error: error.message });
+	// 		} else {
+	// 			res.status(400).json({ error: "Unknown error occurred" });
+	// 		}
+	// 	}
+	// }
+
+	async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+		passport.authenticate("local", (err: any, user: any, info: any) => {
+			if (err) return next(err);
+			if (!user)
+				return res
+					.status(401)
+					.json({ message: info?.message || "Unauthorized" });
+			res.json(user);
+		})(req, res, next);
 	}
 
 	// This is def scuffed and needs to be rewritten
