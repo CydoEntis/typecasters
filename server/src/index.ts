@@ -4,6 +4,7 @@ import { Server } from "socket.io";
 import { env } from "./config/config";
 import bodyParser from "body-parser";
 import authRoutes from "./routes/auth.routes";
+import passport from "passport";
 
 const app = express();
 const server = createServer(app);
@@ -15,6 +16,7 @@ const io = new Server(server, {
 
 app.use(bodyParser.json());
 
+app.use(passport.initialize());
 app.use("/api/auth", authRoutes);
 
 const PORT = env.appPort || 3000;

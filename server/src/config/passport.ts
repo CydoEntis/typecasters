@@ -1,29 +1,51 @@
-import {
-	ExtractJwt,
-	Strategy as JwtStrategy,
-	StrategyOptionsWithoutRequest,
-} from "passport-jwt";
+import { Strategy as LocalStrategy } from "passport-local";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import userRepository from "../repositories/user.repository";
+import bcrypt from "bcryptjs";
+import { User } from "shared/types";
 
-const options: StrategyOptionsWithoutRequest = {
-	jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-	secretOrKey: "secret",
-};
+export const localStrategy = new LocalStrategy(
+	{
+		usernameField: "email",
+	},
+	async (email: string, password: string, done) => {
+		try {
+			const user = await userRepository.findByEmail(email);
+			if (!user) {
+				return done(null, false, { message: "Invalid credentials" });
+			}
+
+			const isMatch = await bcrypt.compare(password, user.password);
+			if (!isMatch) {
+				return done(null, false, { message: "Invalid credentials" });
+			}
+
+			return done(null, user);
+		} catch (error) {
+			return done(error);
+		}
+	},
+);
+
+export const jwtStrategy = new JwtStrategy(
+	{
+		secretOrKey: process.env.JWT_SECRET || "your-secret-key",
+		jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+	},
+	async (jwtPayload, done) => {
+		try {
+			const user = await userRepository.findById(jwtPayload.id);
+			if (!user) {
+				return done(null, false, { message: "Unauthorized" });
+			}
+			return done(null, user);
+		} catch (error) {
+			return done(error, false);
+		}
+	},
+);
 
 export default function (passport: any) {
-	passport.use(
-		new JwtStrategy(options, async (jwtPayload: { id: number }, done: any) => {
-			try {
-				const foundUser = await userRepository.findById(jwtPayload.id);
-
-				if (!foundUser) {
-					return done(null, false, { message: "User not found" });
-				}
-
-				return done(null, foundUser);
-			} catch (err) {
-				return done(err, false);
-			}
-		}),
-	);
+	passport.use("local", localStrategy);
+	passport.use("jwt", jwtStrategy);
 }
