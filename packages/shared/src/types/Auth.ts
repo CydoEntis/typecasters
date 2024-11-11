@@ -4,6 +4,7 @@ export type AuthenticatedUser = {
 	username: string;
 	accessToken: string;
 	refreshToken: string;
+	isLoggedIn?: boolean;
 };
 
 export type Tokens = {
