@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import userRepository from "../repositories/user.repository";
 import { z } from "zod";
 import { User } from "shared/index";
+import tokenService from "./token.service";
 
 const registerSchema = z
 	.object({
@@ -24,7 +25,15 @@ const loginSchema = z.object({
 
 export type LoginCredentials = z.infer<typeof loginSchema>;
 
+export type AuthenticatedUser = {
+	email: string;
+	username: string;
+	accessToken: string;
+	refreshToken: string;
+}
+
 class AuthService {
+	// TODO: Update this so the user gets logged in automatically after registering.
 	async register(credentials: RegisterCredentials) {
 		const validationResult = registerSchema.safeParse(credentials);
 		if (!validationResult.success) {
@@ -52,23 +61,33 @@ class AuthService {
 		return createdUser;
 	}
 
-	async login(credentials: LoginCredentials): Promise<User> {
-		const user = await userRepository.findByEmail(credentials.email);
+	async login(credentials: LoginCredentials): Promise<AuthenticatedUser> {
+		const existingUser = await userRepository.findByEmail(credentials.email);
 
-		if (!user) {
+		if (!existingUser) {
 			throw new Error("Email or password is incorrect.");
 		}
 
 		const isPasswordValid = await this.verifyPassword(
 			credentials.password,
-			user.password,
+			existingUser.password,
 		);
 
 		if (!isPasswordValid) {
 			throw new Error("Email or password is incorrect.");
 		}
 
-		return user;
+		const accessToken = tokenService.generateAccessToken(existingUser.id);
+		const refreshToken = tokenService.generateRefreshToken(existingUser.id);
+
+		const loggedInUser = {
+			email: existingUser.email,
+			username: existingUser.username,
+			accessToken,
+			refreshToken,
+		};
+
+		return loggedInUser;
 	}
 
 	private async hashPassword(password: string): Promise<string> {

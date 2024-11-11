@@ -15,6 +15,13 @@
       "when": 1730942338477,
       "tag": "0001_rich_trauma",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1731293705536,
+      "tag": "0002_glorious_umar",
+      "breakpoints": true
     }
   ]
 }
