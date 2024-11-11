@@ -8,8 +8,12 @@ class TokenService {
 		try {
 			const decodedToken = this.decodeRefreshToken(token) as { id: number };
 			return await tokenRepository.getRefreshToken(decodedToken.id, token);
-		} catch (error: any) {
-			throw new Error("Error while saving refresh token: " + error.message);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				throw new Error("Error while getting refresh token: " + error.message);
+			} else {
+				throw new Error("Unknown error while getting refresh token");
+			}
 		}
 	}
 
@@ -24,12 +28,16 @@ class TokenService {
 			const newRefreshToken = {
 				userId,
 				token: refreshToken,
-				expiresAt: expiresAt,
+				expiresAt,
 			} as RefreshToken;
 
 			await tokenRepository.saveRefreshToken(newRefreshToken);
-		} catch (error: any) {
-			throw new Error("Error while saving refresh token: " + error.message);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				throw new Error("Error while saving refresh token: " + error.message);
+			} else {
+				throw new Error("Unknown error while saving refresh token");
+			}
 		}
 	}
 
@@ -48,52 +56,75 @@ class TokenService {
 			await this.revokeRefreshToken(existingToken);
 
 			const newAccessToken = this.generateAccessToken(decodedToken.userId);
-			const newRefreshToken = this.generateRefreshToken(decodedToken.userId)
+			const newRefreshToken = this.generateRefreshToken(decodedToken.userId);
 
-			await this.saveRefreshToken(decodedToken.userId, newRefreshToken)
+			await this.saveRefreshToken(decodedToken.userId, newRefreshToken);
 
 			return {
 				accessToken: newAccessToken,
-				refreshToken: newRefreshToken
+				refreshToken: newRefreshToken,
+			};
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				throw new Error("Error while refreshing tokens: " + error.message);
+			} else {
+				throw new Error("Unknown error while refreshing tokens");
 			}
-
-		} catch (error: any) {
-			throw new Error("Error while refreshing access token: " + error.message);
 		}
 	}
 
 	public async revokeRefreshToken(token: RefreshToken) {
 		try {
 			await tokenRepository.revokeRefreshToken(token);
-		} catch (error: any) {
-			throw new Error("Error while revoking refresh token: " + error.message);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				throw new Error("Error while revoking refresh token: " + error.message);
+			} else {
+				throw new Error("Unknown error while revoking refresh token");
+			}
 		}
 	}
 
-	generateAccessToken(userId: number): string {
+	public generateAccessToken(userId: number): string {
 		try {
 			return jwt.sign({ userId }, "secret", { expiresIn: "15min" });
-		} catch (error: any) {
-			throw new Error("Error while generating access token: " + error.message);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				throw new Error(
+					"Error while generating access token: " + error.message,
+				);
+			} else {
+				throw new Error("Unknown error while generating access token");
+			}
 		}
 	}
 
-	generateRefreshToken(userId: number): string {
+	public generateRefreshToken(userId: number): string {
 		try {
 			return jwt.sign({ id: userId }, "refresh_secret", { expiresIn: "90min" });
-		} catch (error: any) {
-			throw new Error("Error while generating refresh token: " + error.message);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				throw new Error(
+					"Error while generating refresh token: " + error.message,
+				);
+			} else {
+				throw new Error("Unknown error while generating refresh token");
+			}
 		}
 	}
 
-	decodeRefreshToken(token: string): string | jwt.JwtPayload {
+	public decodeRefreshToken(token: string): string | jwt.JwtPayload {
 		try {
 			return jwt.verify(
 				token,
 				process.env.REFRESH_TOKEN_SECRET || "refresh_secret",
 			);
-		} catch (error: any) {
-			throw new Error("Error while decoding refresh token: " + error.message);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				throw new Error("Error while decoding refresh token: " + error.message);
+			} else {
+				throw new Error("Unknown error while decoding refresh token");
+			}
 		}
 	}
 }
