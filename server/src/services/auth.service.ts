@@ -74,7 +74,7 @@ class AuthService {
 		return loggedInUser;
 	}
 
-	async refreshToken(refreshToken: string): Promise<Tokens> {
+	async refreshTokens(refreshToken: string): Promise<Tokens> {
 		if (!refreshToken) throw new Error("Refresh token required.");
 
 		try {

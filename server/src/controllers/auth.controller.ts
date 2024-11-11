@@ -21,24 +21,40 @@ class AuthController {
 	}
 
 	async login(req: Request, res: Response) {
-				try {
-					const credentials = req.body;
-					const loggedInUser = await authService.login(credentials);
+		try {
+			const credentials = req.body;
+			const loggedInUser = await authService.login(credentials);
 
-					res.status(201).json({
-						message: "User logged in successfully",
-						user: loggedInUser
-					});
-				} catch (error: unknown) {
-					if (error instanceof Error) {
-						res.status(400).json({ error: error.message });
-					} else {
-						res.status(400).json({ error: "Unknown error occurred" });
-					}
-				}
+			res.status(201).json({
+				message: "User logged in successfully",
+				user: loggedInUser,
+			});
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				res.status(400).json({ error: error.message });
+			} else {
+				res.status(400).json({ error: "Unknown error occurred" });
+			}
+		}
 	}
 
+	async refreshTokens(req: Request, res: Response) {
+		try {
+			const { refreshToken } = req.body;
 
+			if (!refreshToken)
+				return res.status(401).json({ message: "Refresh token required" });
+
+			const tokens = await authService.refreshTokens(refreshToken);
+			res.status(201).json(tokens);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				res.status(400).json({ error: error.message });
+			} else {
+				res.status(400).json({ error: "Unknown error occurred" });
+			}
+		}
+	}
 }
 
 export default new AuthController();
