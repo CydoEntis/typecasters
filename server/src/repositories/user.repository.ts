@@ -33,6 +33,7 @@ class UserRepository {
 				username,
 				email,
 				password,
+				updatedAt: new Date(),
 			})
 			.returning();
 

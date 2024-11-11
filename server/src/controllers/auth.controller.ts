@@ -23,10 +23,11 @@ class AuthController {
 	async login(req: Request, res: Response) {
 				try {
 					const credentials = req.body;
-					const newUser = await authService.login(credentials);
+					const loggedInUser = await authService.login(credentials);
 
 					res.status(201).json({
 						message: "User logged in successfully",
+						user: loggedInUser
 					});
 				} catch (error: unknown) {
 					if (error instanceof Error) {
