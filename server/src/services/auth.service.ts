@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import userRepository from "../repositories/user.repository";
 import { z } from "zod";
+import { User } from "shared/index";
 
 const registerSchema = z
 	.object({
@@ -51,14 +52,17 @@ class AuthService {
 		return createdUser;
 	}
 
-	async login(credentials: LoginCredentials) {
+	async login(credentials: LoginCredentials): Promise<User> {
 		const user = await userRepository.findByEmail(credentials.email);
 
 		if (!user) {
 			throw new Error("Email or password is incorrect.");
 		}
 
-		const isPasswordValid = await this.verifyPassword(credentials.password, user.password);
+		const isPasswordValid = await this.verifyPassword(
+			credentials.password,
+			user.password,
+		);
 
 		if (!isPasswordValid) {
 			throw new Error("Email or password is incorrect.");

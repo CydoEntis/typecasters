@@ -13,6 +13,17 @@ class UserRepository {
 		return foundUser || null;
 	}
 
+	async findById(id: number): Promise<User | null> {
+		const [foundUser] = await db
+			.select()
+			.from(user)
+			.where(eq(user.id, id))
+			.limit(1)
+			.execute();
+
+		return foundUser || null;
+	}
+
 	async createUser(newUser: Omit<User, "id">): Promise<User> {
 		const { username, email, password } = newUser;
 
