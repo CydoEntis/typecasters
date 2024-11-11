@@ -1,5 +1,10 @@
 import { create } from "zustand";
-import { AuthenticatedUser, LoginCredentials, RegisterCredentials, Tokens } from "shared/types";
+import {
+	AuthenticatedUser,
+	LoginCredentials,
+	RegisterCredentials,
+	Tokens,
+} from "shared/types";
 
 import localStorageService from "../services/local-storage.service";
 import authService from "../services/auth.service";
@@ -38,7 +43,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 			error: null,
 		}));
 		const storedData =
-			localStorageService.getItem<AuthenticatedUser>("questLog");
+			localStorageService.getItem<AuthenticatedUser>("typecasters");
 		if (storedData) {
 			try {
 				const user: AuthenticatedUser = {
@@ -98,7 +103,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 		}));
 		try {
 			const user = await authService.registerUser(credentials);
-			localStorageService.setItem("questLog", user);
+			localStorageService.setItem("typecasters", user);
 			set({ user });
 		} catch (error) {
 			set({ error: "Failed to register user" });
@@ -118,12 +123,11 @@ export const useUserStore = create<UserState>((set, get) => ({
 		}));
 		try {
 			const fetchedUser = await authService.loginUser(credentials);
-
 			const user: AuthenticatedUser = {
 				...fetchedUser,
 				isLoggedIn: true,
 			};
-			localStorageService.setItem("questLog", user);
+			localStorageService.setItem("typecasters", user);
 			set({ user });
 		} catch (error) {
 			set({ error: "Failed to log in" });
@@ -150,7 +154,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 				};
 
 				await authService.logoutUser(tokens);
-				localStorageService.removeItem("questLog");
+				localStorageService.removeItem("typecasters");
 				set({ user: null });
 			}
 		} catch (error) {
