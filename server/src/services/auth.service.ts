@@ -16,6 +16,13 @@ const registerSchema = z
 
 export type RegisterCredentials = z.infer<typeof registerSchema>;
 
+const loginSchema = z.object({
+	email: z.string().email("Please provide a valid email"),
+	password: z.string().min(1, "Please provide a password"),
+});
+
+export type LoginCredentials = z.infer<typeof loginSchema>;
+
 class AuthService {
 	async register(credentials: RegisterCredentials) {
 		const validationResult = registerSchema.safeParse(credentials);
@@ -42,6 +49,22 @@ class AuthService {
 
 		const createdUser = await userRepository.createUser(newUser);
 		return createdUser;
+	}
+
+	async login(credentials: LoginCredentials) {
+		const user = await userRepository.findByEmail(credentials.email);
+
+		if (!user) {
+			throw new Error("Email or password is incorrect.");
+		}
+
+		const isPasswordValid = await this.verifyPassword(credentials.password, user.password);
+
+		if (!isPasswordValid) {
+			throw new Error("Email or password is incorrect.");
+		}
+
+		return user;
 	}
 
 	private async hashPassword(password: string): Promise<string> {
