@@ -6,8 +6,12 @@ import tokenRepository, {
 class TokenService {
 	public async getRefreshToken(token: string): Promise<RefreshToken | null> {
 		try {
-			const decodedToken = this.decodeRefreshToken(token) as { id: number };
-			return await tokenRepository.getRefreshToken(decodedToken.id, token);
+			const decodedToken = this.decodeRefreshToken(token) as { userId: number };
+
+			console.log("Decoded Token: ", decodedToken)
+			console.log("Token: ", token)
+
+			return await tokenRepository.getRefreshToken(decodedToken.userId, token);
 		} catch (error: unknown) {
 			if (error instanceof Error) {
 				throw new Error("Error while getting refresh token: " + error.message);
@@ -101,7 +105,7 @@ class TokenService {
 
 	public generateRefreshToken(userId: number): string {
 		try {
-			return jwt.sign({ id: userId }, "refresh_secret", { expiresIn: "90min" });
+			return jwt.sign({ id: userId }, "secret", { expiresIn: "90min" });
 		} catch (error: unknown) {
 			if (error instanceof Error) {
 				throw new Error(
@@ -117,7 +121,7 @@ class TokenService {
 		try {
 			return jwt.verify(
 				token,
-				process.env.REFRESH_TOKEN_SECRET || "refresh_secret",
+				process.env.REFRESH_TOKEN_SECRET || "secret",
 			);
 		} catch (error: unknown) {
 			if (error instanceof Error) {

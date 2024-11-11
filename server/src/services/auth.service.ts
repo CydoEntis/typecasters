@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
-import userRepository from "../repositories/user.repository";
 import tokenService from "./token.service";
 import { z } from "zod";
+import userRepository from "../repositories/user.repository";
 
 export type AuthenticatedUser = {
 	email: string;
@@ -37,6 +37,8 @@ export type Tokens = {
 };
 
 class AuthService {
+	private jwtSecret: string = "secret";
+
 	public async register(credentials: RegisterCredentials) {
 		try {
 			const validationResult = registerSchema.safeParse(credentials);
@@ -136,7 +138,9 @@ class AuthService {
 
 	public async logout(refreshToken: string) {
 		try {
+			console.log(refreshToken);
 			if (!refreshToken) throw new Error("Refresh token required.");
+
 
 			const existingToken = await tokenService.getRefreshToken(refreshToken);
 

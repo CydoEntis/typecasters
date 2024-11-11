@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import passport from "passport";
 import authService from "../services/auth.service";
+import { AuthenticatedRequest } from "../middleware/auth/extractRefreshToken";
 
 class AuthController {
 	async register(req: Request, res: Response): Promise<void> {
@@ -13,79 +13,68 @@ class AuthController {
 				user: newUser,
 			});
 		} catch (error: unknown) {
-			this.handleError(error, res);
+			if (error instanceof Error) {
+				res.status(400).json({ error: error.message });
+			} else {
+				res.status(400).json({ error: "Unknown error occurred" });
+			}
 		}
 	}
 
-	// Login user using passport-local strategy
 	async login(req: Request, res: Response): Promise<void> {
-		passport.authenticate(
-			"local",
-			{ session: false },
-			async (err: any, user: any, info: any) => {
-				if (err || !user) {
-					return res
-						.status(401)
-						.json({ message: info?.message || "Login failed" });
-				}
+		try {
+			const credentials = req.body;
+			const loggedInUser = await authService.login(credentials);
 
-				try {
-					const tokens = await authService.login(user);
-					res.status(200).json(tokens);
-				} catch (error: unknown) {
-					this.handleError(error, res);
-				}
-			},
-		)(req, res);
+			res.status(201).json({
+				message: "User logged in successfully",
+				user: loggedInUser,
+			});
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				res.status(400).json({ error: error.message });
+			} else {
+				res.status(400).json({ error: "Unknown error occurred" });
+			}
+		}
 	}
 
-	async refreshTokens(req: Request, res: Response): Promise<void> {
-		passport.authenticate(
-			"jwt",
-			{ session: false },
-			async (err: any, user: any, info: any) => {
-				if (err || !user) {
-					return res
-						.status(401)
-						.json({ message: "Invalid or expired refresh token" });
-				}
+	async refreshTokens(req: AuthenticatedRequest, res: Response): Promise<void> {
+		try {
+			const { refreshToken } = req;
 
-				try {
-					const tokens = await authService.refreshTokens(user);
-					res.status(200).json(tokens);
-				} catch (error: unknown) {
-					this.handleError(error, res);
-				}
-			},
-		)(req, res);
+			if (!refreshToken) {
+				res.status(401).json({ message: "Refresh token required" });
+				return;
+			}
+			const tokens = await authService.refreshTokens(refreshToken);
+			res.status(201).json(tokens);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				res.status(400).json({ error: error.message });
+			} else {
+				res.status(400).json({ error: "Unknown error occurred" });
+			}
+		}
 	}
 
-	async logout(req: Request, res: Response): Promise<void> {
-		passport.authenticate(
-			"jwt",
-			{ session: false },
-			async (err: any, user: any, info: any) => {
-				if (err || !user) {
-					return res
-						.status(401)
-						.json({ message: "Invalid or expired refresh token" });
-				}
+	async logout(req: AuthenticatedRequest, res: Response): Promise<void> {
+		try {
+			const { refreshToken } = req;
 
-				try {
-					await authService.logout(user);
-					res.status(200).json({ message: "Logout successful" });
-				} catch (error: unknown) {
-					this.handleError(error, res);
-				}
-			},
-		)(req, res);
-	}
+			if (!refreshToken) {
+				res.status(401).json({ message: "Refresh token required" });
+				return;
+			}
 
-	private handleError(error: unknown, res: Response) {
-		if (error instanceof Error) {
-			res.status(400).json({ error: error.message });
-		} else {
-			res.status(400).json({ error: "Unknown error occurred" });
+			await authService.logout(refreshToken);
+			res.status(201).json({ message: "Logout successful" });
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				res.status(400).json({ error: error.message });
+			} else {
+				res.status(400).json({ error: "Unknown error occurred" });
+			}
 		}
 	}
 }

@@ -1,6 +1,6 @@
 import { integer, pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
 
-export const refreshToken = pgTable("refresh_tokens", {
+export const refreshTokens = pgTable("refresh_tokens", {
 	id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 	userId: integer("user_id").notNull(),
 	token: text("token").notNull(),

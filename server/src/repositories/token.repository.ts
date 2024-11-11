@@ -1,5 +1,5 @@
 import db from "../db/index";
-import { refreshToken } from "../db/schemas/refreshTokens";
+import { refreshTokens } from "../db/schemas/refreshTokens.schema";
 import { eq, and } from "drizzle-orm";
 
 export type RefreshToken = {
@@ -11,31 +11,30 @@ export type RefreshToken = {
 	isExpired: boolean;
 };
 
-
 class TokenRepository {
 	public async getRefreshToken(
-		refreshTokenId: number,
+		userId: number,
 		token: string,
 	): Promise<RefreshToken | null> {
 		const [existingToken] = await db
 			.select({
-				id: refreshToken.id,
-				userId: refreshToken.userId,
-				token: refreshToken.token,
-				createdAt: refreshToken.createdAt,
-				expiresAt: refreshToken.expiresAt,
-				isExpired: refreshToken.isExpired,
+				id: refreshTokens.id,
+				userId: refreshTokens.userId,
+				token: refreshTokens.token,
+				createdAt: refreshTokens.createdAt,
+				expiresAt: refreshTokens.expiresAt,
+				isExpired: refreshTokens.isExpired,
 			})
-			.from(refreshToken)
+			.from(refreshTokens)
 			.where(
-				and(eq(refreshToken.id, refreshTokenId), eq(refreshToken.token, token)),
+				and(eq(refreshTokens.userId, userId), eq(refreshTokens.token, token)),
 			);
 
 		return existingToken || null;
 	}
 
 	public async saveRefreshToken(token: RefreshToken): Promise<void> {
-		await db.insert(refreshToken).values({
+		await db.insert(refreshTokens).values({
 			userId: token.userId,
 			token: token.token,
 			expiresAt: token.expiresAt,
@@ -44,11 +43,16 @@ class TokenRepository {
 
 	public async revokeRefreshToken(token: RefreshToken) {
 		await db
-			.update(refreshToken)
+			.update(refreshTokens)
 			.set({
 				isExpired: true,
 			})
-			.where(and(eq(refreshToken.id, token.id), eq(refreshToken.token, token.token)));
+			.where(
+				and(
+					eq(refreshTokens.id, token.id),
+					eq(refreshTokens.token, token.token),
+				),
+			);
 	}
 }
 

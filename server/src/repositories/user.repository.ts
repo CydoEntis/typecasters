@@ -1,14 +1,14 @@
 import { User } from "shared/types/index";
 import db from "../db/index";
-import { user } from "../db/schemas/user";
+import { users } from "../db/schemas/user.schema";
 import { eq } from "drizzle-orm";
 
 class UserRepository {
 	async findByEmail(email: string): Promise<User | null> {
 		const [foundUser] = await db
 			.select()
-			.from(user)
-			.where(eq(user.email, email));
+			.from(users)
+			.where(eq(users.email, email));
 
 		return foundUser || null;
 	}
@@ -16,8 +16,8 @@ class UserRepository {
 	async findById(id: number): Promise<User | null> {
 		const [foundUser] = await db
 			.select()
-			.from(user)
-			.where(eq(user.id, id))
+			.from(users)
+			.where(eq(users.id, id))
 			.limit(1)
 			.execute();
 
@@ -28,7 +28,7 @@ class UserRepository {
 		const { username, email, password } = newUser;
 
 		const [createdUser] = await db
-			.insert(user)
+			.insert(users)
 			.values({
 				username,
 				email,
