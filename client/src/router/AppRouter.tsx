@@ -3,6 +3,7 @@ import AppLayout from "../components/layouts/AppLayout";
 import GameBoard from "../pages/GameBoard";
 import RegisterPage from "../pages/auth/RegisterPage";
 import LoginPage from "../pages/auth/LoginPage";
+import AuthGuard from "../guards/AuthGuard";
 
 const router = createBrowserRouter([
 	{
@@ -11,7 +12,11 @@ const router = createBrowserRouter([
 		children: [
 			{
 				path: "game",
-				element: <GameBoard />,
+				element: (
+					<AuthGuard>
+						<GameBoard />
+					</AuthGuard>
+				),
 			},
 			{
 				path: "login",
