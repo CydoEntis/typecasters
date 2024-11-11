@@ -64,7 +64,9 @@ class AuthService {
 			};
 
 			const createdUser = await userRepository.createUser(newUser);
-			return createdUser;
+			const { password: pwd, ...userWithoutPassword } = createdUser;
+
+			return userWithoutPassword;
 		} catch (error: unknown) {
 			if (error instanceof Error) {
 				throw new Error("Registration failed: " + error.message);
@@ -140,7 +142,6 @@ class AuthService {
 		try {
 			console.log(refreshToken);
 			if (!refreshToken) throw new Error("Refresh token required.");
-
 
 			const existingToken = await tokenService.getRefreshToken(refreshToken);
 

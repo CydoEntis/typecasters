@@ -1,5 +1,5 @@
 import db from "../db/index";
-import { refreshTokens } from "../db/schemas/refreshTokens";
+import { refreshTokens } from "../db/schemas/refresh-tokens.schema";
 import { eq, and } from "drizzle-orm";
 
 export type RefreshToken = {
