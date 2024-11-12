@@ -16,6 +16,8 @@ function SideNavbar({}: Props) {
 			style={{
 				navbar: {},
 			}}
+			withBorder={false}
+			className="shadow-xl"
 		>
 			{user?.isLoggedIn ? (
 				<AuthenticatedNavLinks />

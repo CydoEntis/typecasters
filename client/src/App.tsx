@@ -16,9 +16,12 @@ function App() {
 	const theme = createTheme({
 		cursorType: "pointer",
 		colors: {
-			darkPrimary: colorsTuple("#190130"),
+			darkPrimary: colorsTuple("#0F001E"),
 			darkSecondary: colorsTuple("#260145"),
 			darkCard: colorsTuple("#260145"), //#3B0F62
+			// darkPrimary: colorsTuple("#190130"),
+			// darkSecondary: colorsTuple("#260145"),
+			// darkCard: colorsTuple("#260145"), //#3B0F62
 			lightPrimary: colorsTuple("#F5F4F4"),
 			lightSecondary: colorsTuple("#FFFFFF"),
 			lightCard: colorsTuple("#FFFFFF"),
