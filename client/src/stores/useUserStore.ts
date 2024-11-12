@@ -102,7 +102,11 @@ export const useUserStore = create<UserState>((set, get) => ({
 			error: null,
 		}));
 		try {
-			const user = await authService.registerUser(credentials);
+			const fetchedUser = await authService.registerUser(credentials);
+			const user: AuthenticatedUser = {
+				...fetchedUser,
+				isLoggedIn: true,
+			};
 			localStorageService.setItem("typecasters", user);
 			set({ user });
 		} catch (error) {

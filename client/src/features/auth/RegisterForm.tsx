@@ -51,8 +51,8 @@ function RegisterForm({}: Props) {
 		try {
 			await registerUser(data);
 
-			form.reset();
 			navigate("/game");
+			form.reset();
 		} catch (error) {
 			console.error(error);
 			if (error instanceof AxiosError && error.response?.data?.errors) {
