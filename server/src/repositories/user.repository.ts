@@ -1,4 +1,4 @@
-import { User } from "shared/types/index";
+import { User } from "shared/types";
 import db from "../db/index";
 import { users } from "../db/schemas/user.schema";
 import { eq } from "drizzle-orm";

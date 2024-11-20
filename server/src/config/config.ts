@@ -1,6 +1,5 @@
 import path from "path";
 import dotenv from "dotenv";
-dotenv.config();
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -13,6 +12,7 @@ interface Env {
   dbPassword: string | undefined;
   dbName: string | undefined;
   appPort: number | undefined;
+  jwtSecret: string;
 }
 
 export const env: Env = {
@@ -23,4 +23,5 @@ export const env: Env = {
     dbPassword: process.env.DB_PASSWORD,
     dbName: process.env.DB_NAME,
     appPort: process.env.APP_PORT ? parseInt(process.env.APP_PORT, 10) : undefined,
+    jwtSecret: process.env.JWT_SECRET || "secret",
 }
