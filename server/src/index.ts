@@ -4,8 +4,8 @@ import { Server } from "socket.io";
 import { env } from "./config/config";
 import authRoutes from "./routes/auth.routes";
 import passport from "passport";
-import jwt from "jsonwebtoken";
 import cors from "cors";
+import { socketAuthMiddleware } from "./middleware/socketAuthMiddleware";
 
 const app = express();
 const server = createServer(app);
@@ -15,32 +15,7 @@ const io = new Server(server, {
   },
 });
 
-const users = [
-  { id: 1, username: "TestGuy1" },
-  { id: 2, username: "TestGuy2" }
-];
-
-io.use((socket, next) => {
-  const token = socket.handshake.auth.token;
-
-  if (token) {
-    jwt.verify(token, env.jwtSecret, (err: any, decoded: any) => {
-      if (err) {
-        return next(new Error('Authentication error'));
-      }
-      const user = users.find(u => u.id === decoded.id);
-      if (user) {
-        socket.data.user = user;
-        next();
-      } else {
-        next(new Error('User not found'));
-      }
-
-    });
-  } else {
-    next(new Error('Authentication error'));
-  }
-});
+io.use(socketAuthMiddleware);
 
 app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
